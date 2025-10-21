@@ -373,10 +373,10 @@
                 <div class="progress-fill" id="progressFill">0/4 fichiers déposés</div>
             </div>
             <div class="status-badges" id="statusBadges">
-                <span class="status-badge pending">Personne 1 - En attente</span>
-                <span class="status-badge pending">Personne 2 - En attente</span>
-                <span class="status-badge pending">Personne 3 - En attente</span>
-                <span class="status-badge pending">Personne 4 - En attente</span>
+                <span class="status-badge pending">Augustin - En attente</span>
+                <span class="status-badge pending">David - En attente</span>
+                <span class="status-badge pending">Frédéric - En attente</span>
+                <span class="status-badge pending">Sandra - En attente</span>
             </div>
         </div>
 
@@ -394,10 +394,10 @@
                 </div>
 
                 <div class="user-selection" id="userSelection">
-                    <button class="user-btn" data-user="1">Personne 1</button>
-                    <button class="user-btn" data-user="2">Personne 2</button>
-                    <button class="user-btn" data-user="3">Personne 3</button>
-                    <button class="user-btn" data-user="4">Personne 4</button>
+                    <button class="user-btn" data-user="1">Augustin</button>
+                    <button class="user-btn" data-user="2">David</button>
+                    <button class="user-btn" data-user="3">Frédéric</button>
+                    <button class="user-btn" data-user="4">Sandra</button>
                 </div>
 
                 <div class="upload-area" id="uploadArea">
@@ -594,13 +594,20 @@
             progressFill.textContent = `${totalFiles}/4 fichiers déposés`;
 
             // Mise à jour des badges de statut
+            const userNames = {
+                '1': 'Augustin',
+                '2': 'David',
+                '3': 'Frédéric',
+                '4': 'Sandra'
+            };
+            
             statusBadges.innerHTML = '';
             for (let i = 1; i <= 4; i++) {
                 const badge = document.createElement('span');
                 badge.className = depositedFiles[i] ? 'status-badge completed' : 'status-badge pending';
                 badge.textContent = depositedFiles[i] 
-                    ? `Personne ${i} - ✓ Déposé` 
-                    : `Personne ${i} - En attente`;
+                    ? `${userNames[i]} - ✓ Déposé` 
+                    : `${userNames[i]} - En attente`;
                 statusBadges.appendChild(badge);
             }
 
@@ -624,6 +631,13 @@
 
         // Affichage de la liste des fichiers
         function displayFiles(isUnlocked) {
+            const userNames = {
+                '1': 'Augustin',
+                '2': 'David',
+                '3': 'Frédéric',
+                '4': 'Sandra'
+            };
+            
             filesList.innerHTML = '';
 
             if (Object.keys(depositedFiles).length === 0) {
@@ -642,7 +656,7 @@
                 fileCard.innerHTML = `
                     <div class="file-icon">📄</div>
                     <div class="file-info">
-                        <div class="file-user">Personne ${userId}</div>
+                        <div class="file-user">${userNames[userId]}</div>
                         <div class="file-details">
                             ${isUnlocked ? file.name : '████████.███'} - ${sizeKB} KB
                             <br>Déposé le ${uploadDate}
