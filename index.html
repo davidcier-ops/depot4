@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dépôt Collectif - 4 Personnes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .user-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-btn {
+            padding: 15px;
+            border: 2px solid #667eea;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .user-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .user-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .user-btn.completed {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .user-btn.completed::after {
+            content: ' ✓';
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            background: #f0f2ff;
+            border-color: #764ba2;
+        }
+
+        .upload-area.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-file.show {
+            display: flex;
+        }
+
+        .file-name {
+            flex: 1;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .remove-file {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .files-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .file-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-card.locked {
+            opacity: 0.6;
+            filter: blur(2px);
+            pointer-events: none;
+        }
+
+        .file-icon {
+            font-size: 32px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-user {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .file-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .download-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: #764ba2;
+        }
+
+        .unlock-message {
+            background: #10b981;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .unlock-message.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            color: #1565c0;
+        }
+
+        .reset-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Dépôt Collectif Sécurisé</h1>
+            <p>Système de partage à 4 personnes avec déverrouillage automatique</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-container">
+                <div class="progress-fill" id="progressFill">0/4 fichiers déposés</div>
+            </div>
+            <div class="status-badges" id="statusBadges">
+                <span class="status-badge pending">Personne 1 - En attente</span>
+                <span class="status-badge pending">Personne 2 - En attente</span>
+                <span class="status-badge pending">Personne 3 - En attente</span>
+                <span class="status-badge pending">Personne 4 - En attente</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Section de dépôt -->
+            <div class="section" id="uploadSection">
+                <h2 class="section-title">📤 Déposer votre fichier</h2>
+                
+                <div class="info-box">
+                    <p><strong>Instructions :</strong></p>
+                    <p>1. Sélectionnez votre nom</p>
+                    <p>2. Choisissez votre fichier</p>
+                    <p>3. Cliquez sur "Déposer le fichier"</p>
+                    <p>⚠️ Les fichiers seront accessibles uniquement quand les 4 personnes auront déposé leur fichier</p>
+                </div>
+
+                <div class="user-selection" id="userSelection">
+                    <button class="user-btn" data-user="1">Personne 1</button>
+                    <button class="user-btn" data-user="2">Personne 2</button>
+                    <button class="user-btn" data-user="3">Personne 3</button>
+                    <button class="user-btn" data-user="4">Personne 4</button>
+                </div>
+
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Cliquez ou déposez votre fichier ici</div>
+                    <div class="upload-subtext">Tous types de fichiers acceptés (Max 50MB)</div>
+                    <input type="file" id="fileInput" class="file-input">
+                </div>
+
+                <div class="selected-file" id="selectedFile">
+                    <span class="file-name" id="fileName"></span>
+                    <button class="remove-file" id="removeFile">✕ Retirer</button>
+                </div>
+
+                <button class="submit-btn" id="submitBtn" disabled>Déposer le fichier</button>
+            </div>
+
+            <!-- Section des fichiers déposés -->
+            <div class="section">
+                <h2 class="section-title">📋 Fichiers déposés</h2>
+                
+                <div class="unlock-message" id="unlockMessage">
+                    🎉 Tous les fichiers ont été déposés ! Vous pouvez maintenant les télécharger.
+                </div>
+
+                <div class="files-list" id="filesList">
+                    <p style="text-align: center; color: #999; padding: 20px;">Aucun fichier déposé pour le moment</p>
+                </div>
+            </div>
+
+            <button class="reset-btn" id="resetBtn">🔄 Réinitialiser tout (Admin)</button>
+        </div>
+    </div>
+
+    <script>
+        // État de l'application
+        let selectedUser = null;
+        let selectedFile = null;
+        let depositedFiles = JSON.parse(localStorage.getItem('depositedFiles')) || {};
+
+        // Éléments du DOM
+        const userButtons = document.querySelectorAll('.user-btn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFileDiv = document.getElementById('selectedFile');
+        const fileNameSpan = document.getElementById('fileName');
+        const removeFileBtn = document.getElementById('removeFile');
+        const submitBtn = document.getElementById('submitBtn');
+        const filesList = document.getElementById('filesList');
+        const progressFill = document.getElementById('progressFill');
+        const statusBadges = document.getElementById('statusBadges');
+        const unlockMessage = document.getElementById('unlockMessage');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Initialisation
+        updateUI();
+
+        // Sélection de l'utilisateur
+        userButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const userId = btn.dataset.user;
+                
+                // Vérifier si l'utilisateur a déjà déposé
+                if (depositedFiles[userId]) {
+                    alert('Cette personne a déjà déposé son fichier !');
+                    return;
+                }
+
+                // Désélectionner tous les boutons
+                userButtons.forEach(b => b.classList.remove('selected'));
+                
+                // Sélectionner le bouton cliqué
+                btn.classList.add('selected');
+                selectedUser = userId;
+                
+                // Activer la zone de dépôt
+                uploadArea.classList.remove('disabled');
+                
+                updateSubmitButton();
+            });
+        });
+
+        // Gestion de la zone de dépôt
+        uploadArea.addEventListener('click', () => {
+            if (!selectedUser) {
+                alert('Veuillez d\'abord sélectionner votre nom !');
+                return;
+            }
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (selectedUser) {
+                uploadArea.style.background = '#f0f2ff';
+            }
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.background = '#f8f9ff';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.background = '#f8f9ff';
+            
+            if (!selectedUser) {
+                alert('Veuillez d\'abord sélectionner votre nom !');
+                return;
+            }
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleFileSelect(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        removeFileBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            selectedFileDiv.classList.remove('show');
+            updateSubmitButton();
+        });
+
+        // Gestion de la sélection de fichier
+        function handleFileSelect(file) {
+            // Vérifier la taille (50MB max)
+            if (file.size > 50 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux (max 50MB)');
+                return;
+            }
+
+            selectedFile = file;
+            fileNameSpan.textContent = file.name;
+            selectedFileDiv.classList.add('show');
+            updateSubmitButton();
+        }
+
+        // Mise à jour du bouton de soumission
+        function updateSubmitButton() {
+            submitBtn.disabled = !(selectedUser && selectedFile);
+        }
+
+        // Soumission du fichier
+        submitBtn.addEventListener('click', async () => {
+            if (!selectedUser || !selectedFile) return;
+
+            // Lire le fichier en base64
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileData = {
+                    name: selectedFile.name,
+                    size: selectedFile.size,
+                    type: selectedFile.type,
+                    data: e.target.result,
+                    uploadDate: new Date().toISOString(),
+                    user: selectedUser
+                };
+
+                // Sauvegarder dans localStorage
+                depositedFiles[selectedUser] = fileData;
+                localStorage.setItem('depositedFiles', JSON.stringify(depositedFiles));
+
+                // Réinitialiser le formulaire
+                selectedUser = null;
+                selectedFile = null;
+                fileInput.value = '';
+                selectedFileDiv.classList.remove('show');
+                userButtons.forEach(b => b.classList.remove('selected'));
+                uploadArea.classList.add('disabled');
+
+                // Mettre à jour l'interface
+                updateUI();
+
+                alert('✅ Fichier déposé avec succès !');
+            };
+
+            reader.readAsDataURL(selectedFile);
+        });
+
+        // Mise à jour de l'interface
+        function updateUI() {
+            const totalFiles = Object.keys(depositedFiles).length;
+            const isUnlocked = totalFiles === 4;
+
+            // Mise à jour de la barre de progression
+            const percentage = (totalFiles / 4) * 100;
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = `${totalFiles}/4 fichiers déposés`;
+
+            // Mise à jour des badges de statut
+            statusBadges.innerHTML = '';
+            for (let i = 1; i <= 4; i++) {
+                const badge = document.createElement('span');
+                badge.className = depositedFiles[i] ? 'status-badge completed' : 'status-badge pending';
+                badge.textContent = depositedFiles[i] 
+                    ? `Personne ${i} - ✓ Déposé` 
+                    : `Personne ${i} - En attente`;
+                statusBadges.appendChild(badge);
+            }
+
+            // Mise à jour des boutons utilisateur
+            userButtons.forEach(btn => {
+                const userId = btn.dataset.user;
+                if (depositedFiles[userId]) {
+                    btn.classList.add('completed');
+                    btn.disabled = true;
+                }
+            });
+
+            // Affichage des fichiers
+            displayFiles(isUnlocked);
+
+            // Message de déverrouillage
+            if (isUnlocked) {
+                unlockMessage.classList.add('show');
+            }
+        }
+
+        // Affichage de la liste des fichiers
+        function displayFiles(isUnlocked) {
+            filesList.innerHTML = '';
+
+            if (Object.keys(depositedFiles).length === 0) {
+                filesList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Aucun fichier déposé pour le moment</p>';
+                return;
+            }
+
+            for (let userId in depositedFiles) {
+                const file = depositedFiles[userId];
+                const fileCard = document.createElement('div');
+                fileCard.className = 'file-card' + (isUnlocked ? '' : ' locked');
+                
+                const sizeKB = (file.size / 1024).toFixed(2);
+                const uploadDate = new Date(file.uploadDate).toLocaleString('fr-FR');
+
+                fileCard.innerHTML = `
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-user">Personne ${userId}</div>
+                        <div class="file-details">
+                            ${isUnlocked ? file.name : '████████.███'} - ${sizeKB} KB
+                            <br>Déposé le ${uploadDate}
+                        </div>
+                    </div>
+                    ${isUnlocked ? `<button class="download-btn" onclick="downloadFile(${userId})">⬇️ Télécharger</button>` : '<div style="color: #999;">🔒 Verrouillé</div>'}
+                `;
+
+                filesList.appendChild(fileCard);
+            }
+        }
+
+        // Téléchargement d'un fichier
+        window.downloadFile = function(userId) {
+            const file = depositedFiles[userId];
+            if (!file) return;
+
+            const link = document.createElement('a');
+            link.href = file.data;
+            link.download = file.name;
+            link.click();
+        };
+
+        // Réinitialisation (Admin)
+        resetBtn.addEventListener('click', () => {
+            if (confirm('⚠️ Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible !')) {
+                if (confirm('Confirmez-vous la suppression de tous les fichiers déposés ?')) {
+                    localStorage.removeItem('depositedFiles');
+                    depositedFiles = {};
+                    selectedUser = null;
+                    selectedFile = null;
+                    fileInput.value = '';
+                    selectedFileDiv.classList.remove('show');
+                    userButtons.forEach(b => {
+                        b.classList.remove('selected', 'completed');
+                        b.disabled = false;
+                    });
+                    unlockMessage.classList.remove('show');
+                    updateUI();
+                    alert('✅ Système réinitialisé avec succès !');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
