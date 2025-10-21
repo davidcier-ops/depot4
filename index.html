@@ -666,8 +666,22 @@
             link.click();
         };
 
-        // Réinitialisation (Admin)
+        // Réinitialisation (Admin) avec protection par code
         resetBtn.addEventListener('click', () => {
+            // Demander le code administrateur
+            const adminCode = prompt('🔐 Code administrateur requis :');
+            
+            if (adminCode === null) {
+                // L'utilisateur a annulé
+                return;
+            }
+            
+            if (adminCode !== 'Torrelys') {
+                alert('❌ Code incorrect ! Accès refusé.');
+                return;
+            }
+            
+            // Code correct, procéder à la réinitialisation
             if (confirm('⚠️ Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible !')) {
                 if (confirm('Confirmez-vous la suppression de tous les fichiers déposés ?')) {
                     localStorage.removeItem('depositedFiles');
